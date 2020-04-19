@@ -8,8 +8,8 @@ MAPQUEST_BASE_URL = "http://www.mapquestapi.com/geocoding/v1/address"
 MBTA_BASE_URL = "https://api-v3.mbta.com/stops"
 
 # Your API KEYS (you need to use your own keys - very long random characters)
-MAPQUEST_API_KEY = ""
-MBTA_API_KEY = ""
+MAPQUEST_API_KEY = "cEwKVkeGJBIgVDin6yoNpGIexgjYjc6G"
+MBTA_API_KEY = "996280d2018a4ae4879cb0f7a9b94c1b"
 
 
 # A little bit of scaffolding if you want to use it
@@ -19,8 +19,10 @@ def get_json(url):
     a Python JSON object containing the response to that request.
     We did similar thing in the previous assignment.
     """
-
-    response_data = ...
+    f = urllib.request.urlopen(url)
+    response_text = f.read().decode('utf-8')
+    response_data = json.loads(response_text)
+    # pprint(response_data)
     return response_data
 
 
@@ -36,9 +38,9 @@ def get_lat_long(place_name):
     # print(url) # uncomment to test the url in browser
     place_json = get_json(url)
     # pprint(place_json)
-    lat = place_json[...][...] # modify this so you get the correct latitude
-    lon = place_json[...][...] # modify this so you get the correct longitude
-
+    lat = place_json["results"][0]["locations"][0]['latLng']['lat'] # modify this so you get the correct latitude
+    lon = place_json["results"][0]["locations"][0]['latLng']['lng'] # modify this so you get the correct longitude
+    # pprint(str(lat) + ' ' + str(lon))
     return lat, lon
 
 
@@ -54,12 +56,15 @@ def get_nearest_station(latitude, longitude):
     # print(url) # uncomment to test the url in browser
     station_json = get_json(url)
     # pprint(station_json) # uncomment to see the json data
-    station_name = station_json[...][...] # modify this so you get the correct station name
+    # f = open('222.txt','w')
+    # f.write(str(station_json))
+    # f.close()
+    station_name = station_json['data'][0]['attributes']['name'] # modify this so you get the correct station name
     # print(station_name) # uncomment to check it
 
     # try to find out where the wheelchair_boarding information is
-    wheelchair_boarding = ...
-
+    wheelchair_boarding = station_json['data'][0]['attributes']['wheelchair_boarding']
+    # print(wheelchair_boarding)
     return station_name, wheelchair_boarding
 
 
@@ -83,5 +88,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    lat,lon = get_lat_long("Fenway Park")
+    get_nearest_station(lat,lon)
 
